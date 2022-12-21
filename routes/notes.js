@@ -24,7 +24,7 @@ router.post("/create", upload.single("notesFile") ,async (req,res)=>{
         }
 
         if(!code){
-            return res.json({error: "Please enter code"})
+            return res.json({error: "Please enter code."})
         }
         
         const codeCompare = await bcrypt.compare(code,adminDetails.code)
