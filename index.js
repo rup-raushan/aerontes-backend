@@ -13,6 +13,16 @@ app.use(cors({
     credentials:true,  
     preflightContinue: true
 }))
+
+app.get('/',(req,res)=>{
+    try {
+        res.json({greeting: "Hello and welcome to the aeronotes the world class social notes sharing app for all the students of class 8th."})
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({error: "Some Internal Error Occured"})
+    }
+})
+
 app.use(bodyParser.json({limit:'50mb'})); 
 app.use(express.json())
 // Route for user

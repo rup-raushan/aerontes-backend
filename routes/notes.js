@@ -67,10 +67,28 @@ router.post("/getNotes", (req,res) => {
     }
 })
 
+
+// Route 3 : for getting either all or by subjects
+
 router.get("/fetch", async (req,res)=>{
     try {
-        const data = await Notes.find()
-        return res.status(200).json(data)
+        const subject = req.query.subject
+
+        if(!subject){
+            return res.json({error: 'Please provide subject.'})
+        }
+
+        if(subject === "all"){
+            const data = await Notes.find()
+            return res.status(200).json(data)
+        }
+        
+        const data = await Notes.find({subject: subject})
+        if(!data){
+            return res.json({error: 'Enter a valid subject.'})
+        }
+        
+        return res.json(data)
     } catch (error) {
         console.log(error)
         return res.status(500).json({error: "Some Internal error occured."})
