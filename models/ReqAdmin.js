@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 
+// Schema for Admin request
 const ReqAdminSchema = new mongoose.Schema({
     name:{
         type: String,
@@ -29,5 +30,6 @@ const ReqAdminSchema = new mongoose.Schema({
     }
 })
 
+// Modal of admin Request
 const ReqAdmin = mongoose.model('reqAdmin', ReqAdminSchema)
 module.exports = ReqAdmin

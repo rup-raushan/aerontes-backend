@@ -17,6 +17,7 @@ try {
         // Finding a admin for approvement
         const adminDetails = await ReqAdmin.findOne({adminID: adminID})
         const manager = await Manager.findOne({managerID: process.env.managerID})
+        // verifing manager code
         const codeValidation = await bcrypt.compare(code, manager.code)
 
 
@@ -69,7 +70,7 @@ try {
         const authToken = jwt.sign(data,process.env.JWT_SIGN)
         res.json({authToken})
         
-     } catch (error) {
+  } catch (error) {
         console.log(error)
         return res.status(404).send(`
             <!DOCTYPE html>

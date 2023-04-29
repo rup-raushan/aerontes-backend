@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 
+// Schema for a normal user
 const UserSchema = new mongoose.Schema({
     name:{
         type: String,
@@ -19,9 +20,6 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    confirmPassword:{
-        type: String
-    },
     class:{
         type: Number,
         default: 8
@@ -40,5 +38,6 @@ const UserSchema = new mongoose.Schema({
     }
 })
 
+// Modal of User
 const User =  mongoose.model("User", UserSchema)
 module.exports = User;

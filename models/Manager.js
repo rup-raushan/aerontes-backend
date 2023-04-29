@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 
+// Schema for a Manager
 const ManagerSchema = new mongoose.Schema({
     name:{
         type: String,
@@ -29,6 +30,7 @@ const ManagerSchema = new mongoose.Schema({
     }
 })
 
+// Creating a modal for manager
 const Manager = mongoose.model("manager", ManagerSchema)
 
 module.exports = Manager

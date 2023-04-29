@@ -16,7 +16,7 @@ app.use(cors({
 
 app.get('/',(req,res)=>{
     try {
-        res.json({greeting: "Hello and welcome to the aeronotes the world class social notes sharing app for all the students of class 8th."})
+        res.json({greeting: "Hello and welcome to the aeronotes the world class social notes sharing app for all the students of class 9th."})
     } catch (error) {
         console.log(error)
         res.status(500).json({error: "Some Internal Error Occured"})
@@ -35,5 +35,5 @@ app.use("/api/admin", require("./routes/admin"))
 app.use("/api/manager", require("./routes/manager"))
 
 app.listen(PORT,()=>{
-    console.log(`App is running successfully on the https://localhost:${PORT}`)
+    console.log(`App has been successfully started.`)
 })

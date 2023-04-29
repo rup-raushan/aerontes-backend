@@ -4,16 +4,18 @@ const jwt = require("jsonwebtoken")
 const Notes = require("../models/Notes")
 const Admin = require("../models/Admin")
 const bcrypt = require('bcryptjs');
-const upload = require("../middleware/upload");
 const {bucket} = require("../db")
 const path = require('path')
 
 
-router.post("/create", upload.single("notesFile") ,async (req,res)=>{
+// Route 1 : For uploading a note in uploads folder.
+// Login required
+router.post("/create", async (req,res)=>{
     try{
         const authToken = req.header("authToken")
-        const {title,note, code,description} = req.body;
+        const {title,note, code ,description} = req.body;
 
+        // verifing the token
         const adminTokenParsed = jwt.verify(authToken,process.env.JWT_SIGN)
 
         const _id = adminTokenParsed.user.id
@@ -33,10 +35,10 @@ router.post("/create", upload.single("notesFile") ,async (req,res)=>{
             return res.json({error: "Invalid Code."})
         }
 
-        let notesDocument = await Notes.create({
+        await Notes.create({
             title,
             subject: req.body.subject,
-            note: req.file.path,
+            note,
             by: adminDetails.name,
             description
         })
@@ -68,8 +70,8 @@ router.post("/getNotes", (req,res) => {
 })
 
 
-// Route 3 : for getting either all or by subjects
-
+// Route 3 : for getting notes either all or by subjects
+// No login required
 router.get("/fetch", async (req,res)=>{
     try {
         const subject = req.query.subject
@@ -95,7 +97,7 @@ router.get("/fetch", async (req,res)=>{
     }
 })
 
-
+// Route 4: for fetching a specific note
 router.get('/get',(req,res)=>{
     const name = req.query.name
 
@@ -103,3 +105,5 @@ router.get('/get',(req,res)=>{
 })
 
 module.exports = router;
+
+// So this is the best world class notes share app and i think it should be uploaded till 1st may

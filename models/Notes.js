@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 
+// Schema for Notes
 const NotesSchema = new mongoose.Schema({
     note:{
         type: String,
@@ -8,22 +9,23 @@ const NotesSchema = new mongoose.Schema({
     title:{
         type: String,
         required: true
-   },
-   description:{
+    },
+    description:{
         type: String
     },
     subject:{
         type: String
     },
-   by:{
+    by:{
         type: String,
         required: true
-   },
+    },
    date:{
     type: Date,
     default: Date.now
    }
 })
 
+// Modal for Notes
 const Notes = mongoose.model('notes', NotesSchema)
 module.exports = Notes

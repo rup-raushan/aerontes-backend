@@ -11,7 +11,7 @@ dotenv.config()
 
 
 
-// Router 1: For request for a approval of a admin
+// Router 1: For Admin Id's request
 // Login not required
 router.post('/request',[
     // validating the credentials
@@ -86,7 +86,7 @@ router.post('/request',[
 
 
 
-// Route 2: For login a admin if admin request approved.
+// Route 2: For login 
 // No login required
 router.post("/login",[
     // validating the credentials
@@ -147,7 +147,8 @@ router.post("/fetch", async (req, res)=>{
 
 
 
-// Route 4: for fetching admin requests
+// Route 4: for fetching all admin requests
+// No Login Required
 router.post('/fetch/request', async(req,res)=>{
     try{
         const totalRequest = await ReqAdmin.find();
@@ -160,7 +161,8 @@ router.post('/fetch/request', async(req,res)=>{
 })
 
 
-// Route 5 : for fetching admin status
+// Route 5 : for fetching admin status is pending,approved or rejected
+// Login required
 router.post('/status', async(req,res)=>{
     try {
         const token = req.header('ADT')
@@ -169,14 +171,19 @@ router.post('/status', async(req,res)=>{
             return res.json({error: "Request first or Enter Admin id."})
         }
 
+        // Verifing the token collecred form admin's local storage
+        // Returns TRUE || FALSE
         const tokenData = jwt.verify(token, process.env.JWT_SIGN)
 
         if(!tokenData){
             return res.status(401).json({error: "Invalid token"})
         }
 
+        // Checking whether admin already exist or requested
         const checkReqAdmin = await ReqAdmin.findOne({_id: tokenData.user.id})
         const checkAdmin = await Admin.findOne({_id: tokenData.user.id})
+
+        // Returing message according to admin's condition
         if(!checkReqAdmin && checkAdmin){
             return res.json({id: checkAdmin.adminID , status: "Approved", message: 'Your request has been approved by the manager of Aeronotes.'})
         }
@@ -206,10 +213,12 @@ router.post("/get", async(req,res)=>{
 
         const _id = adminTokenParsed.user.id
         const adminDetails = await Admin.findOne({_id})
+
         if(!adminDetails){
             return res.json({error: "Not Possible"})
-          }
-          return res.status(200).json(adminDetails)
+        }
+        
+        return res.status(200).json(adminDetails)
     } catch (error) {
         console.log(error)
         return res.status(500).json({error: "Some enternal occured."})

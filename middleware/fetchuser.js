@@ -1,10 +1,12 @@
+// Setting up a middleware for getting admin info
+// admin's data will be in req.user
+
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv')
 dotenv.config();
 
 const JWT_SIGN = process.env.JWT_SIGN;
 
-// Middleware for setting accessing the _id of the uesr
 const fetchuser = (req,res,next)=>{
     const token = req.header('auth-token')
     if(!token){

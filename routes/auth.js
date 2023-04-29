@@ -10,7 +10,8 @@ dotenv.config();
 const JWT_SIGN = process.env.JWT_SIGN
 
 
-// Route 1: For creating a new user in the database
+// Route 1: For user's sing up
+// No Login Required   
 router.post("/createUser",[
     // validating the credentials
     body('name', "Enter a valid Name.").isLength({min: 3}),
@@ -28,46 +29,46 @@ async (req,res)=>{
     try {
         // for validation of user already exist or not
         let findUserEmail = await User.findOne({email: req.body.email})
-    let findUserUsername = await User.findOne({username: req.body.username})
+        let findUserUsername = await User.findOne({username: req.body.username})
 
-    if(findUserEmail){
-        return res.json({error: "User with this email already exist."})
-    }else if(findUserUsername){
-        return res.json({error: "User with this username already exist."})
-    }
-    if(!(req.body.password === req.body.confirmPassword)){
-        return res.json({error:"you have made some mistake."})
-    }
-
-    // Hashing password
-    const salt = await bcrypt.genSalt(10)
-    const hasedPassword = await bcrypt.hash(req.body.password, salt)
-
-    // Crearing user in database
-    let user = await User.create({
-        name: req.body.name,
-        username: req.body.username,
-        email: req.body.email,
-        password: hasedPassword,
-        rollno: req.body.rollno,
-        gender: req.body.gender
-    })
-
-    // Creating token using _id of the user
-    const data = {
-        user:{
-            id: user._id
+        // Returning ERROR if user exist
+        if(findUserEmail){
+            return res.json({error: "User with this email already exist."})
+        }else if(findUserUsername){
+            return res.json({error: "User with this username already exist."})
         }
+        if(!(req.body.password === req.body.confirmPassword)){
+            return res.json({error:"you have made some mistake."})
+        }
+
+        // Hashing  password and Generating Salt
+        const salt = await bcrypt.genSalt(10)
+        const hasedPassword = await bcrypt.hash(req.body.password, salt)
+
+        // Crearing user in database
+        let user = await User.create({
+            name: req.body.name,
+            username: req.body.username,
+            email: req.body.email,
+            password: hasedPassword,
+            rollno: req.body.rollno,
+            gender: req.body.gender
+        })
+
+        // Creating token using _id of the user
+        const data = {
+            user:{
+                id: user._id
+            }
+        }
+        const authToken = jwt.sign(data,JWT_SIGN)
+
+        res.json({authToken})
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({error: "Some internal error occured."})
     }
-    const authToken = jwt.sign(data,JWT_SIGN)
-
-    res.json({authToken})
-
-
-} catch (error) {
-    console.log(error)
-    res.status(500).json({error: "Some internal error occured."})
-}
 })
 
 
