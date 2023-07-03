@@ -106,4 +106,71 @@ router.get('/get',(req,res)=>{
 
 module.exports = router;
 
-// So this is the best world class notes share app and i think it should be uploaded till 1st may
+// Route 5: For filteration of notes 
+// Login not required
+
+router.get('/filter',async(req,res)=>{
+    try {
+        const {admin,subject} = req.query
+
+        if(!(admin || subject)) return res.status(400).json({error: "Please select criteria."})
+
+        if(admin && !(subject)){
+            const data = await Notes.find({by: admin})
+
+            if(!data) return res.status(404).json({error: `Notes uploded by ${admin} not found.`})
+            if(data.length == 0) return res.status(404).json({error: `${admin} has not uploaded any notes.`})
+
+            return res.status(200).json(data)
+        }
+
+        if(subject && !(admin)){
+            const data = await Notes.find({subject})
+
+            if(data.length == 0 || !data) return res.status(404).json({error: `Notes of subject ${subject} not found.`})
+
+            return res.status(200).json(data)
+        }
+        
+        if(admin && subject){
+            const data = await Notes.find({subject,by: admin})
+
+            if(data.length == 0 || !data) return res.status(404).json({error: `Notes not found.`})
+
+            return res.status(200).json(data)
+        }
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({error:"Some Internal error occured."})
+    }
+})
+
+// Route 6: For deleting a notes
+// No Login required
+
+router.delete('/delete',async (req,res)=>{
+    try {
+        const {_id} = req.headers
+
+        if(!_id){
+            return res.status(401).json({error: "Please Enter the notes Id."})
+        }
+
+        const notesById = await Notes.findOne({_id})
+
+        if(!notesById){
+            return res.status(404).json({error: "Notes not found"})
+        }
+
+        const deleteNotes = await Notes.deleteOne({_id})
+
+        if(!deleteNotes){
+            return res.status(401).json({error: "Notes can't able to Delete."})
+        }
+
+        return res.status(200).json({status: true,msg: "Successfully deleted."})
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({error: "Some Internal error occured."})
+    }
+})

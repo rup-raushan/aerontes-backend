@@ -198,7 +198,7 @@ router.post('/status', async(req,res)=>{
         
     } catch (error) {
         console.log(error)
-        return res.json({error: "Some enternal occured."})
+        return res.json({error: "Some Internal error occured."})
     }
 })
 
@@ -221,10 +221,33 @@ router.post("/get", async(req,res)=>{
         return res.status(200).json(adminDetails)
     } catch (error) {
         console.log(error)
-        return res.status(500).json({error: "Some enternal occured."})
+        return res.status(500).json({error: "Some Internal error occured."})
     }
 })
 
+// Route 7: For fetching names of all admins
+// Login Required (normal user)
+router.get('/get/names', async(req,res)=>{
+    try{
+        const adminNames = []
+        const authToken = req.query.token
+        
+        if(!authToken)return res.status(401).json({error: "First Log in."})
 
+        const userDetailsParsed = jwt.verify(authToken,process.env.JWT_SIGN)
+
+        if(!userDetailsParsed) return res.status(404).json({error: "Account not found."})
+
+        const allAdminDetails = await Admin.find()
+
+        allAdminDetails.forEach(e=>{
+            adminNames.push(e.name)
+        })
+        return res.status(200).json({names: adminNames})
+    }catch(error){
+        console.log(error)
+        return res.status(500).json({error:"Some Internal error occured."})
+    }
+})
 
 module.exports = router

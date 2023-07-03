@@ -68,7 +68,7 @@ try {
             }
         }
         const authToken = jwt.sign(data,process.env.JWT_SIGN)
-        res.json({authToken})
+        return res.json({authToken})
         
   } catch (error) {
         console.log(error)
