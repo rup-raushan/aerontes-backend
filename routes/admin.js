@@ -230,13 +230,13 @@ router.post("/get", async(req,res)=>{
 router.get('/get/names', async(req,res)=>{
     try{
         const adminNames = []
-        const authToken = req.query.token
+        // const authToken = req.query.token
         
-        if(!authToken)return res.status(401).json({error: "First Log in."})
+        // if(!authToken)return res.status(401).json({error: "First Log in."})
 
-        const userDetailsParsed = jwt.verify(authToken,process.env.JWT_SIGN)
+        // const userDetailsParsed = jwt.verify(authToken,process.env.JWT_SIGN)
 
-        if(!userDetailsParsed) return res.status(404).json({error: "Account not found."})
+        // if(!userDetailsParsed) return res.status(404).json({error: "Account not found."})
 
         const allAdminDetails = await Admin.find()
 
