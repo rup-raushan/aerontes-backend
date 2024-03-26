@@ -137,8 +137,8 @@ async (req,res)=>{
 // No login required
 router.post("/fetch", async (req, res)=>{
     try {
-        const result = await Admin.find().select("name").select('email')
-        res.json(result)
+        const result = await Admin.find()
+        return res.json(result)
     } catch (error) {
         console.log(error);
         res.status(500).json({error: "Internal error occured"})
@@ -226,7 +226,7 @@ router.post("/get", async(req,res)=>{
 })
 
 // Route 7: For fetching names of all admins
-// Login Required (normal user)
+// No Login Required (normal user)
 router.get('/get/names', async(req,res)=>{
     try{
         const adminNames = []

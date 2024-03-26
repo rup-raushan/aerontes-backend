@@ -13,41 +13,16 @@ dotenv.config()
 // Route 1: For approving a admin request
 router.post('/approve', async (req,res)=>{
 try {
-        const { adminID, code } = req.body;
-        // Finding a admin for approvement
+        const {token,adminID} = req.body
+          
+        const tokenParsed = jwt.verify(token,process.env.JWT_SIGN)
+        const id = tokenParsed.user.id
+        
+        const managerDetails = await Manager.findOne({_id: id})
+        if(!managerDetails) return res.status(401).json({error: "Invalid Request"})
+        if(managerDetails.managerID !== process.env.managerID)return res.status(401).json({error: "Invalid Request"})
+
         const adminDetails = await ReqAdmin.findOne({adminID: adminID})
-        const manager = await Manager.findOne({managerID: process.env.managerID})
-        // verifing manager code
-        const codeValidation = await bcrypt.compare(code, manager.code)
-
-
-        if(!codeValidation){
-            return res.status(404).send(`
-            <!DOCTYPE html>
-            <html lang="en">
-              <head>
-                <meta charset="utf-8">
-                <title>Error</title>
-              </head>
-              <body>
-                <pre>Cannot POST /api/manager/approve</pre>
-              </body>
-            </html>`)
-        }
-
-        if(!adminDetails){
-            return res.status(404).send(`
-            <!DOCTYPE html>
-            <html lang="en">
-              <head>
-                <meta charset="utf-8">
-                <title>Error</title>
-              </head>
-              <body>
-                <pre>Cannot POST /api/manager/approve</pre>
-              </body>
-            </html>`)
-        }
 
         const admin = {
             name: adminDetails.name,
@@ -84,6 +59,73 @@ try {
               </body>
             </html>`)
  }
+})
+
+router.post("/login",[
+  // validating the credentials
+  body('password',"Password can't be blank").exists(),
+  body('code', "Code can't be blank").exists()
+],  async(req,res)=>{
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  try {
+    const {password,code} = req.body
+
+    const managerDetails = await Manager.findOne({managerID: process.env.managerID})
+
+    const passVerification = await bcrypt.compare(password,managerDetails.password)
+    const codeVerification = await bcrypt.compare(code,managerDetails.code)
+
+    if(!passVerification){
+      // const salt = await bcrypt.genSalt(10)
+      // const hasedPassword = await bcrypt.hash("Rup@2907", salt)
+      // console.log(hasedPassword)
+      return res.status(401).json({error: "Invalid Request"})
+    }
+    
+    if(!codeVerification){
+      return res.status(401).json({error: "Invalid Request"})
+    }
+
+    const data = {
+      user:{
+          id: managerDetails._id
+      }
+    }
+    const authToken = jwt.sign(data,process.env.JWT_SIGN)
+    res.status(200).json({authToken})
+
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({error: "Some Internal error occured."})
+  }
+})
+
+router.delete("/admin/delete", async(req,res)=>{
+  try {
+    const {token,adminID} = req.body
+    
+    const tokenParsed = jwt.verify(token,process.env.JWT_SIGN)
+    const id = tokenParsed.user.id
+    
+    const managerDetails = await Manager.findOne({_id: id})
+    if(!managerDetails) return res.status(401).json({error: "Invalid Request"})
+    if(managerDetails.managerID !== process.env.managerID)return res.status(401).json({error: "Invalid Request"})
+
+    console.log(adminID)
+    if(!adminID) return res.status(401).json({error: "Invalid Request"})
+    const deleteAdmin = await Admin.deleteOne({adminID})
+    // if(!deleteAdmin) return res.status(401).json({error: "Invalid Request"})
+
+    return res.status(200).json({success: "Successfully Deleted."})
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({error: "Some Internal error occured."})
+  }
 })
 
 module.exports = router

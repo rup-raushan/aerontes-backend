@@ -5,7 +5,8 @@ const Notes = require("../models/Notes")
 const Admin = require("../models/Admin")
 const bcrypt = require('bcryptjs');
 const {bucket} = require("../db")
-const path = require('path')
+const path = require('path');
+const Manager = require("../models/Manager")
 
 
 // Route 1 : For uploading a note in uploads folder.
@@ -17,17 +18,37 @@ router.post("/create", async (req,res)=>{
 
         // verifing the token
         const adminTokenParsed = jwt.verify(authToken,process.env.JWT_SIGN)
-
-        const _id = adminTokenParsed.user.id
-        const adminDetails = await Admin.findOne({_id})
-
-        if(!adminDetails){
-          return res.json({error: "Not Possible"})
-        }
-
+        
         if(!code){
             return res.json({error: "Please enter code."})
         }
+
+        const _id = adminTokenParsed.user.id
+        const managerDetails = await Manager.findOne({managerID: process.env.managerID})
+        
+        if(_id == managerDetails._id){
+            const codeCompare = await bcrypt.compare(code,managerDetails.code)   
+            if(!codeCompare){
+                return res.json({error: "Invalid Code."})
+            }
+
+            await Notes.create({
+                title,
+                subject: req.body.subject,
+                note,
+                by: "Aeronotes",
+                verified: true,
+                description
+            })
+    
+            return res.json({status: "success"})
+        }
+        
+        const adminDetails = await Admin.findOne({_id})
+        if(!adminDetails){
+            return res.json({error: "Not Possible"})
+        }
+
         
         const codeCompare = await bcrypt.compare(code,adminDetails.code)
         

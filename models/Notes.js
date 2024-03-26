@@ -16,6 +16,10 @@ const NotesSchema = new mongoose.Schema({
     subject:{
         type: String
     },
+    verified:{
+        type: Boolean,
+        default: false
+    },
     by:{
         type: String,
         required: true
