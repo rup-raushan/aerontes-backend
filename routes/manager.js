@@ -75,15 +75,15 @@ router.post("/login",[
   try {
     const {password,code} = req.body
 
-    const managerDetails = await Manager.findOne({managerID: process.env.managerID})
+    // if(!password) {return res.status(404).json({error: "Please Enter Password."})}
+    // if(!code) return res.status(404).json({error: "Please Enter Code."})
 
+    const managerDetails = await Manager.findOne({managerID: process.env.managerID})
+    
     const passVerification = await bcrypt.compare(password,managerDetails.password)
     const codeVerification = await bcrypt.compare(code,managerDetails.code)
 
     if(!passVerification){
-      // const salt = await bcrypt.genSalt(10)
-      // const hasedPassword = await bcrypt.hash("Rup@2907", salt)
-      // console.log(hasedPassword)
       return res.status(401).json({error: "Invalid Request"})
     }
     

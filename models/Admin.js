@@ -20,6 +20,11 @@ const AdminSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    profile:{
+        type: String,
+        required: false,
+        default: ""
+    },
     code:{
         type: String,
         required: true

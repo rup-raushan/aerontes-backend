@@ -250,4 +250,49 @@ router.get('/get/names', async(req,res)=>{
     }
 })
 
+// Route 8: Adding profile for admin
+// Login required
+
+router.post("/set_avatar",async(req,res)=>{
+    try {
+        const authToken = req.header("authToken")
+        const {profile} = req.body
+
+        const adminTokenParsed = jwt.verify(authToken,process.env.JWT_SIGN)
+        
+        const _id = adminTokenParsed.user.id
+        const adminDetails = await Admin.findOne({_id})
+
+        if(!adminDetails){
+            return res.json({error: "Not Possible"})
+        }
+        
+        const modifiedAdminDetails = await Admin.updateOne({_id},{$set:{profile:profile}})
+
+        if(!modifiedAdminDetails){
+            return res.json({error: "Not Possible"})
+        }
+
+        res.status(200).json({success: "Successfully added profile."})
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({error: "Some Internal error occured."})
+    }
+})
+
+router.get('/get_avatar', async(req,res)=>{
+    try {
+        const name = req.query.name
+
+        const admin = await Admin.findOne({name})
+
+        if(!admin) return res.status(400).json({error:"Invalid Details."})
+
+        res.status(200).json({profile : admin.profile})   
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({error: "Some Internal error occured."})
+    }
+})
+
 module.exports = router

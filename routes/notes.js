@@ -195,3 +195,14 @@ router.delete('/delete',async (req,res)=>{
         return res.status(500).json({error: "Some Internal error occured."})
     }
 })
+
+// Route 7: For editing notes
+// Admin Login Required
+router.post('/edit',async(req,res)=>{
+    try {
+        const {_id,newTitle,newDes,} = req.body
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({error:"Some Internal error occured."})
+    }
+})
