@@ -102,7 +102,7 @@ router.get("/fetch", async (req,res)=>{
         }
 
         if(subject === "all"){
-            const data = await Notes.find()
+            const data = await Notes.find().select("-date -v -_id")
             return res.status(200).json(data)
         }
         
@@ -118,11 +118,29 @@ router.get("/fetch", async (req,res)=>{
     }
 })
 
-// Route 4: for fetching a specific note
-router.get('/get',(req,res)=>{
-    const name = req.query.name
+// Route 4: For editting a note
+router.post('/edit',async (req,res)=>{
+    try {
+        const {_id,title, description, subject, note} = req.body
 
-    res.sendFile(path.join(__dirname,`../${name}`))
+        if(!_id){
+            return res.status(401).json({error: "Please Enter the notes Id."})
+        }
+
+        const notesById = await Notes.findOne({_id})
+
+        if(!notesById){
+            return res.status(404).json({error: "Notes not found"})
+        }
+
+        const updateNotes = await Notes.updateOne({_id},{title,description,subject,note})
+        if(!updateNotes) return res.status(400).json({error: "Can not process at this moment."})
+        
+        res.status(200).json({sucess: "Successfully updated notes."})
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({error: "Some Internal error occured."})
+    }
 })
 
 module.exports = router;
@@ -193,16 +211,5 @@ router.delete('/delete',async (req,res)=>{
     } catch (error) {
         console.log(error)
         return res.status(500).json({error: "Some Internal error occured."})
-    }
-})
-
-// Route 7: For editing notes
-// Admin Login Required
-router.post('/edit',async(req,res)=>{
-    try {
-        const {_id,newTitle,newDes,} = req.body
-    } catch (error) {
-        console.log(error)
-        return res.status(500).json({error:"Some Internal error occured."})
     }
 })

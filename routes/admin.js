@@ -137,7 +137,7 @@ async (req,res)=>{
 // No login required
 router.post("/fetch", async (req, res)=>{
     try {
-        const result = await Admin.find()
+        const result = await Admin.find().select("-profile -password -code -date -_id")
         return res.json(result)
     } catch (error) {
         console.log(error);
@@ -238,9 +238,9 @@ router.get('/get/names', async(req,res)=>{
 
         // if(!userDetailsParsed) return res.status(404).json({error: "Account not found."})
 
-        const allAdminDetails = await Admin.find()
+        const allAdminDetails = await Admin.find().select("name -_id")
 
-        allAdminDetails.forEach(e=>{
+        allAdminDetails.map(e=>{
             adminNames.push(e.name)
         })
         return res.status(200).json({names: adminNames})
