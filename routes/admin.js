@@ -137,7 +137,7 @@ async (req,res)=>{
 // No login required
 router.post("/fetch", async (req, res)=>{
     try {
-        const result = await Admin.find().select("-profile -password -code -date -_id")
+        const result = await Admin.find().select("-profile -password -code -date")
         return res.json(result)
     } catch (error) {
         console.log(error);

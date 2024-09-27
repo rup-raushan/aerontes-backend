@@ -102,7 +102,7 @@ router.get("/fetch", async (req,res)=>{
         }
 
         if(subject === "all"){
-            const data = await Notes.find().select("-date -v -_id")
+            const data = await Notes.find().select("-date -v")
             return res.status(200).json(data)
         }
         
@@ -110,7 +110,6 @@ router.get("/fetch", async (req,res)=>{
         if(!data){
             return res.json({error: 'Enter a valid subject.'})
         }
-        
         return res.json(data)
     } catch (error) {
         console.log(error)

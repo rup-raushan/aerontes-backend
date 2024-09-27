@@ -118,8 +118,12 @@ router.delete("/admin/delete", async(req,res)=>{
 
     console.log(adminID)
     if(!adminID) return res.status(401).json({error: "Invalid Request"})
+
     const deleteAdmin = await Admin.deleteOne({adminID})
-    // if(!deleteAdmin) return res.status(401).json({error: "Invalid Request"})
+    if(!deleteAdmin) return res.status(401).json({error: "Invalid Request"})
+
+    const deleteReqAdmin = await ReqAdmin.deleteOne({adminID})
+    if(!deleteReqAdmin) return res.status(401).json({error: "Invalid Request"})
 
     return res.status(200).json({success: "Successfully Deleted."})
   } catch (error) {
