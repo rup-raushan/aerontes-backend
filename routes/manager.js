@@ -132,4 +132,14 @@ router.delete("/admin/delete", async(req,res)=>{
   }
 })
 
+
+router.get("/message/recieve",async(req,res)=>{
+  try {
+    
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({error: "Some Internal error occured."})
+  }
+})
+
 module.exports = router

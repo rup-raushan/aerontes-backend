@@ -19,6 +19,10 @@ const ManagerSchema = new mongoose.Schema({
     password:{
         type: String,
         required: true,
+    },    
+    notePass:{
+        type: String,
+        required: true,
     },
     code:{
         type: String,

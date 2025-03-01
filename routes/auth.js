@@ -4,8 +4,10 @@ const jwt = require('jsonwebtoken');
 const fetchuser = require('../middleware/fetchuser')
 const router = express.Router();
 const User = require('../models/User')
+const Manager = require('../models/Manager')
 const {body, validationResult} = require('express-validator');
-const dotenv = require('dotenv')
+const dotenv = require('dotenv');
+const Notes = require("../models/Notes");
 dotenv.config();
 const JWT_SIGN = process.env.JWT_SIGN
 
@@ -135,5 +137,42 @@ router.post("/getUser", fetchuser ,async (req,res)=>{
     }
 
 })
+
+// Route 4: for verification purpose for access of notes
+// No Login Required
+
+router.post("/verify", async (req,res)=>{
+    try {
+        const password = req.body.password
+        const verifyType = req.body.verifyType
+        const noteId = req.body.noteId
+        
+        if(!password) return res.status(404).json({status: false, error: "Password not found."})
+            
+        const managerDetails = await Manager.findOne({managerID: process.env.managerID})
+
+        if(verifyType == 0){
+            const passwordCompare = await bcrypt.compare(password,managerDetails.password)
+            if(!passwordCompare) return res.status(401).json({status: false, error: "Password not matched."})
+
+            return res.status(200).json({status: true})     
+        }else if(verifyType == 1){
+            const passwordCompare = await bcrypt.compare(password,managerDetails.notePass)
+            if(!passwordCompare) return res.status(401).json({status: false, error: "Password not matched."})
+
+                
+
+            return res.status(200).json({status: true})  
+        }else{
+            return res.status(404).json({status: false, error: "Please specify."})
+        }
+
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({error: "Some internal error occured."})
+    }
+})
+
 
 module.exports = router;
