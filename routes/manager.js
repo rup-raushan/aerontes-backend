@@ -7,6 +7,7 @@ const Manager = require('../models/Manager')
 const ReqAdmin = require('../models/ReqAdmin')
 const {body, validationResult} = require('express-validator');
 const dotenv = require('dotenv');
+const Feedback = require("../models/Feedback");
 dotenv.config()
 
 
@@ -133,9 +134,32 @@ router.delete("/admin/delete", async(req,res)=>{
 })
 
 
-router.get("/message/recieve",async(req,res)=>{
+router.post("/feedback",async(req,res)=>{
   try {
+    const {name,message} = req.body
     
+    if(!message) return res.status(404).json({error: "Please enter name or message...."})
+
+    if(!name) name = "Unknown"
+
+    await Feedback.create({
+      name,
+      message
+    })
+
+    return res.status(200).json({msg: "Sent successful...."})
+
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({error: "Some Internal error occured."})
+  }
+})
+
+router.get("/feedback/get", async(req,res)=>{
+  try {
+    const data = await Feedback.find().select("-v")
+
+    return res.status(200).json(data.reverse())
   } catch (error) {
     console.log(error)
     return res.status(500).json({error: "Some Internal error occured."})

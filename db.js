@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const mongooseURI = "mongodb+srv://rup:Rup%402907@aeronotes.riymjql.mongodb.net/aeronotes?retryWrites=true&w=majority"
+const mongooseURI = "mongodb+srv://aeronotes:Rup%402907@aerontoes.jzbyyws.mongodb.net/?appName=Aerontoes"
 // const mongooseURI = "mongodb://localhost:27017/aeronotes"
 
 // Function for connecting to database through mongoose

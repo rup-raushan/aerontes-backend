@@ -16,7 +16,7 @@ const JWT_SIGN = process.env.JWT_SIGN
 // No Login Required   
 router.post("/createUser",[
     // validating the credentials
-    body('name', "Enter a valid Name.").isLength({min: 3}),
+    body('name', "Enter a valid Name.").isLength({min: 2}),
     body('email', "Enter a valid email.").isEmail(),
     body('password', "Password must me more than 8 characters.").isLength({ min: 7}),
     body('confirmPassword', 'password cant be blank').exists()
@@ -29,6 +29,8 @@ async (req,res)=>{
     }
     
     try {
+ 
+
         // for validation of user already exist or not
         let findUserEmail = await User.findOne({email: req.body.email})
         let findUserUsername = await User.findOne({username: req.body.username})
@@ -71,6 +73,7 @@ async (req,res)=>{
         console.log(error)
         res.status(500).json({error: "Some internal error occured."})
     }
+
 })
 
 
@@ -91,6 +94,9 @@ async (req,res)=>{
     const {username,password} = req.body;
 
     try {
+
+               
+        
         // Finding user from the database
         let user = await User.findOne({username : username})
         
@@ -114,6 +120,9 @@ async (req,res)=>{
             }
         }
         const authToken = jwt.sign(data,JWT_SIGN)
+
+        
+
         res.json({authToken})
 
     } catch (error) {
